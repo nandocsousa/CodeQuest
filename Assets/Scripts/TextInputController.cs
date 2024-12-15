@@ -44,11 +44,11 @@ public class TextInputController : MonoBehaviour
 
         Debug.Log("Log input: " + input);
 
-        if (input.StartsWith("Move") || input.StartsWith("move"))
+        if (input.StartsWith("Move") || input.StartsWith("move") || input.StartsWith("MOVE"))
         {
             MoveInput(input);
         }
-        else if (input.StartsWith("Rotate") || input.StartsWith("rotate"))
+        else if (input.StartsWith("Rotate") || input.StartsWith("rotate") || input.StartsWith("ROTATE"))
         {
             RotateInput(input);
         }
