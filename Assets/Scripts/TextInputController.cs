@@ -30,6 +30,12 @@ public class TextInputController : MonoBehaviour
         {
             GetInputOnClick();
         }
+
+        // Always refocus input field if unfocused
+        if (!inputField.isFocused)
+        {
+            RefocusInputField();
+        }
     }
 
     private void GetInputOnClick()
@@ -38,31 +44,30 @@ public class TextInputController : MonoBehaviour
 
         Debug.Log("Log input: " + input);
 
-        if (input.StartsWith("Move"))
+        if (input.StartsWith("Move") || input.StartsWith("move"))
         {
             MoveInput(input);
         }
-        else if (input.StartsWith("Rotate"))
+        else if (input.StartsWith("Rotate") || input.StartsWith("rotate"))
         {
             RotateInput(input);
         }
         else
         {
-            ShowErrorMessage("Invalid command. Use MoveDirection(steps) or Rotate(angle).");
+            ShowErrorMessage("Invalid command. Use Move(steps) or Rotate(angle).");
         }
 
         inputField.text = ""; // Clear the input field for the next input
+
+        RefocusInputField();
     }
 
     private void MoveInput(string input)
     {
         try
         {
-            // Extract direction
-            string direction = input.Substring(4, input.IndexOf('(') - 4); // Extract the text between "Move" and "(" ---> 0123 4... (
-
             // Extract steps converted to integer (Parse)
-            int steps = int.Parse(input.Substring(input.IndexOf('(') + 1, input.IndexOf(')') - input.IndexOf('(') - 1)); // Extract the text between "(" and ")" ---> ( 0... )
+            int steps = int.Parse(input.Substring(input.IndexOf('(') + 1, input.IndexOf(')') - input.IndexOf('(') - 1)); // Extract the text between "(" and ")"
 
             // Check if steps exceed the maximum limit
             if (steps > maxSteps)
@@ -71,26 +76,8 @@ public class TextInputController : MonoBehaviour
                 return;
             }
 
-            // Calculate movement based on direction
-            Vector3 moveVector = Vector3.zero;
-            switch (direction)
-            {
-                case "Right":
-                    moveVector = Vector3.right * steps * moveDistance;
-                    break;
-                case "Left":
-                    moveVector = Vector3.left * steps * moveDistance;
-                    break;
-                case "Up":
-                    moveVector = Vector3.up * steps * moveDistance;
-                    break;
-                case "Down":
-                    moveVector = Vector3.down * steps * moveDistance;
-                    break;
-                default:
-                    ShowErrorMessage("Invalid direction. Use Up, Down, Left, or Right.");
-                    return;
-            }
+            // Calculate movement in the direction the player is facing
+            Vector3 moveVector = player.up * steps * moveDistance; // Move in the direction of 'up' (current facing direction)
 
             player.position += moveVector; // Move the player
 
@@ -98,7 +85,7 @@ public class TextInputController : MonoBehaviour
         }
         catch // Happens if int.Parse() fails
         {
-            ShowErrorMessage("Invalid command. Ensure it's in the format MoveDirection(steps).");
+            ShowErrorMessage("Invalid command. Ensure it's in the format Move(steps).");
         }
     }
 
@@ -107,7 +94,7 @@ public class TextInputController : MonoBehaviour
         try
         {
             // Extract angle
-            int angle = int.Parse(input.Substring(input.IndexOf('(') + 1, input.IndexOf(')') - input.IndexOf('(') - 1)); // Extract the text between "(" and ")" ---> ( 0... )
+            int angle = int.Parse(input.Substring(input.IndexOf('(') + 1, input.IndexOf(')') - input.IndexOf('(') - 1)); // Extract the text between "(" and ")"
 
             // Check if the angle is a valid increment of 90
             if (angle % 90 != 0)
@@ -132,5 +119,11 @@ public class TextInputController : MonoBehaviour
     {
         errorText.text = message;
         Debug.LogError(message); // Log the error to the console as well
+    }
+
+    private void RefocusInputField()
+    {
+        inputField.Select();
+        inputField.ActivateInputField(); // Ensures input mode is active
     }
 }
