@@ -14,9 +14,12 @@ public class TextInputController : MonoBehaviour
     private float moveDistance = 1f; // Distance the player moves on the grid
     private int maxSteps = 9; // Maximum steps allowed at once
 
+    private RayCastController rayCastController;
+
     private void Start()
     {
         player = GameObject.FindWithTag("Player").GetComponent<Transform>();
+        rayCastController = player.GetComponent<RayCastController>();
 
         executeButton.onClick.AddListener(GetInputOnClick); // Link GetInputOnClick() to the button click
 
@@ -76,10 +79,17 @@ public class TextInputController : MonoBehaviour
                 return;
             }
 
-            // Calculate movement in the direction the player is facing
-            Vector3 moveVector = player.up * steps * moveDistance; // Move in the direction of 'up' (current facing direction)
+            // Check for blockage
+            for (int i = 0; i < steps; i++)
+            {
+                if (rayCastController.IsBlockedInFront())
+                {
+                    ShowErrorMessage("Cannot move: Path in front is blocked!");
+                    return; // Stop movement if there's a blockage
+                }
 
-            player.position += moveVector; // Move the player
+                player.position += player.up * moveDistance; // Move the player
+            }
 
             errorText.text = ""; // Clear error text after a successful command
         }
@@ -105,7 +115,6 @@ public class TextInputController : MonoBehaviour
 
             // Apply rotation
             player.Rotate(Vector3.forward, -angle); // Negative angle rotates clockwise
-            Debug.Log("Player rotated by " + angle + " degrees.");
 
             errorText.text = ""; // Clear error text after a successful command
         }
