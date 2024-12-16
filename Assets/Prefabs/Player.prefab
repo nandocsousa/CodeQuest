@@ -114,7 +114,7 @@ Transform:
   m_GameObject: {fileID: 3736319364813325723}
   serializedVersion: 2
   m_LocalRotation: {x: 0, y: 0, z: -0.7071068, w: 0.7071068}
-  m_LocalPosition: {x: 0, y: 0, z: 0}
+  m_LocalPosition: {x: 0.5, y: 0.5, z: 0}
   m_LocalScale: {x: 1, y: 1, z: 1}
   m_ConstrainProportionsScale: 0
   m_Children:
@@ -191,7 +191,7 @@ MonoBehaviour:
   m_EditorClassIdentifier: 
   blockageLayer:
     serializedVersion: 2
-    m_Bits: 64
+    m_Bits: 192
 --- !u!50 &6178015477969501045
 Rigidbody2D:
   serializedVersion: 5
