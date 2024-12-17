@@ -83,7 +83,7 @@ public class LaserController : MonoBehaviour
                     origin = hit.point; // Start next raycast from the hit point
                     bounces++;
                 }
-                else if (hit.collider.CompareTag("Button"))
+                else if (hit.collider.CompareTag("ButtonLaser"))
                 {
                     Debug.Log("Laser hit the button!");
 
