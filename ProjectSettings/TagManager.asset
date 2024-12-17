@@ -5,6 +5,9 @@ TagManager:
   serializedVersion: 3
   tags:
   - GameManager
+  - Mirror
+  - Laser
+  - ButtonLaser
   layers:
   - Default
   - TransparentFX
@@ -15,7 +18,7 @@ TagManager:
   - Wall
   - Blockage
   - Mirror
-  - 
+  - Interactable
   - 
   - 
   - 

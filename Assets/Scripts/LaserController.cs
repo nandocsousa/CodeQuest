@@ -1,3 +1,4 @@
+using System.Collections.Generic;
 using UnityEngine;
 
 public class LaserController : MonoBehaviour
@@ -14,6 +15,7 @@ public class LaserController : MonoBehaviour
     private bool laserActive = false;
 
     private float laserDistance = 100f;
+    private int maxBounces = 10;
 
     private void Start()
     {
@@ -58,18 +60,51 @@ public class LaserController : MonoBehaviour
 
     private void UpdateLaser()
     {
-        // Cast the ray
-        RaycastHit2D hit = Physics2D.Raycast(laserLine.transform.position, player.up, laserDistance, laserMask);
+        Vector3 origin = laserLine.transform.position;
+        Vector3 direction = player.up;
 
-        // Update the LineRenderer positions
-        laserLine.SetPosition(0, laserLine.transform.position);
+        List<Vector3> laserPoints = new List<Vector3> { origin }; // List of laser points for LineRenderer
 
-        if (hit.collider != null)
+        int bounces = 0;
+
+        while (bounces < maxBounces)
         {
-            laserLine.SetPosition(1, hit.point);
-            //Debug.Log("Laser hit: " + hit.collider.name);
+            // Cast the ray
+            RaycastHit2D hit = Physics2D.Raycast(origin, direction, laserDistance, laserMask);
+
+            if (hit.collider != null)
+            {
+                laserPoints.Add(hit.point); // Add the hit point to the laser points list
+
+                if (hit.collider.CompareTag("Mirror"))
+                {
+                    // Reflect the laser and keep going
+                    direction = Vector2.Reflect(direction, hit.normal);
+                    origin = hit.point; // Start next raycast from the hit point
+                    bounces++;
+                }
+                else if (hit.collider.CompareTag("Button"))
+                {
+                    Debug.Log("Laser hit the button!");
+
+                    ButtonLaser buttonLaserScript = hit.collider.GetComponent<ButtonLaser>();
+                    buttonLaserScript.ActivateButton();
+
+                    break; // Stop the laser after hitting the button
+                }
+                else break; // Hit a non-mirror object, stop the laser
+            }
+            else
+            {
+                // No collision, extend laser to max distance
+                laserPoints.Add(origin + direction * laserDistance);
+                break;
+            }
         }
-        else laserLine.SetPosition(1, laserLine.transform.position * laserDistance);
+
+        // Update the LineRenderer with all the points
+        laserLine.positionCount = laserPoints.Count;
+        laserLine.SetPositions(laserPoints.ToArray());
     }
 
     private void OnTriggerEnter2D(Collider2D collision)
@@ -80,7 +115,6 @@ public class LaserController : MonoBehaviour
             Debug.Log("Laser can now be activated.");
         }
 
-        SpriteRenderer spriteRenderer = GetComponent<SpriteRenderer>();
-        spriteRenderer.enabled = false;
+        GetComponent<SpriteRenderer>().enabled = false;
     }
 }
