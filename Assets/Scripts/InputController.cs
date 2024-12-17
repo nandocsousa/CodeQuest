@@ -33,21 +33,21 @@ public class InputController : MonoBehaviour
 
     private void ProcessInput()
     {
-        string input = inputField.text; // Get input text
+        string input = inputField.text.ToLower(); // Get input and convert to lowercase
 
-        if (input.StartsWith("Move") || input.StartsWith("move") || input.StartsWith("MOVE"))
+        if (input.StartsWith("move"))
         {
             playerMovementController?.ProcessMoveCommand(input);
         }
-        else if (input.StartsWith("Rotate") || input.StartsWith("rotate") || input.StartsWith("ROTATE"))
+        else if (input.StartsWith("rotate"))
         {
             playerMovementController?.ProcessRotateCommand(input);
         }
-        else if (input.StartsWith("Activate(") || input.StartsWith("activate(") || input.StartsWith("ACTIVATE("))
+        else if (input.StartsWith("activate("))
         {
             laserController?.ProcessActivateCommand(input);
         }
-        else if (input.StartsWith("Deactivate(") || input.StartsWith("deactivate(") || input.StartsWith("DEACTIVATE("))
+        else if (input.StartsWith("deactivate("))
         {
             laserController?.ProcessActivateCommand(input, false);
         }

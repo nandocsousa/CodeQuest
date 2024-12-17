@@ -45,9 +45,11 @@ public class LaserController : MonoBehaviour
             return;
         }
 
-        if (input.Contains("laser"))
+        string parameter = ExtractParameter(input);
+
+        if (parameter == "laser")
             ToggleLaser(activate);
-        else inputController.ShowErrorMessage("Invalid object to activate or deactivate.");
+        else inputController.ShowErrorMessage("Invalid object " + parameter + " to activate or deactivate.");
     }
 
     private void ToggleLaser(bool state)
@@ -60,8 +62,8 @@ public class LaserController : MonoBehaviour
 
     private void UpdateLaser()
     {
-        Vector3 origin = laserLine.transform.position;
-        Vector3 direction = player.up;
+        Vector2 origin = laserLine.transform.position;
+        Vector2 direction = player.up;
 
         List<Vector3> laserPoints = new List<Vector3> { origin }; // List of laser points for LineRenderer
 
@@ -80,7 +82,7 @@ public class LaserController : MonoBehaviour
                 {
                     // Reflect the laser and keep going
                     direction = Vector2.Reflect(direction, hit.normal);
-                    origin = hit.point; // Start next raycast from the hit point
+                    origin = hit.point + direction * 0.01f; // Start next raycast from the hit point + tiny offset along the reflected direction
                     bounces++;
                 }
                 else if (hit.collider.CompareTag("ButtonLaser"))
@@ -105,6 +107,13 @@ public class LaserController : MonoBehaviour
         // Update the LineRenderer with all the points
         laserLine.positionCount = laserPoints.Count;
         laserLine.SetPositions(laserPoints.ToArray());
+    }
+
+    private string ExtractParameter(string input) // Extract the text between "(" and ")"
+    {
+        int startIndex = input.IndexOf('(') + 1;
+        int endIndex = input.IndexOf(')');
+        return input.Substring(startIndex, endIndex - startIndex).ToLower(); // Convert to lowercase
     }
 
     private void OnTriggerEnter2D(Collider2D collision)
