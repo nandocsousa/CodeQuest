@@ -49,13 +49,7 @@ public class MenuController : MonoBehaviour
 
     private IEnumerator StartCountdown()
     {
-        float countdownTime = 1.5f;
-
-        while (countdownTime > 0)
-        {
-            countdownTime -= Time.deltaTime;
-            yield return null; // Wait for the next frame
-        }
+        yield return new WaitForSeconds(1.5f);
 
         SceneManager.LoadScene("Level1");
     }
