@@ -1,3 +1,4 @@
+using System.Collections;
 using System.Collections.Generic;
 using UnityEngine;
 
@@ -14,6 +15,7 @@ public class LaserController : MonoBehaviour
     public bool canActivateLaser = false;
     private bool laserActive = false;
 
+    [Header("Laser Stats")]
     private float laserDistance = 100f;
     private int maxBounces = 10;
 
@@ -71,7 +73,6 @@ public class LaserController : MonoBehaviour
 
         while (bounces < maxBounces)
         {
-            // Cast the ray
             RaycastHit2D hit = Physics2D.Raycast(origin, direction, laserDistance, laserMask);
 
             if (hit.collider != null)
@@ -91,6 +92,8 @@ public class LaserController : MonoBehaviour
 
                     ButtonLaser buttonLaserScript = hit.collider.GetComponent<ButtonLaser>();
                     buttonLaserScript.ActivateButton();
+
+                    StartCoroutine(ButtonDeactivatesLaser());
 
                     break; // Stop the laser after hitting the button
                 }
@@ -125,5 +128,11 @@ public class LaserController : MonoBehaviour
         }
 
         GetComponent<SpriteRenderer>().enabled = false;
+    }
+
+    private IEnumerator ButtonDeactivatesLaser()
+    {
+        yield return new WaitForSeconds(1f);
+        ToggleLaser(false);
     }
 }

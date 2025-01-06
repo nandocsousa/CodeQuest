@@ -4,6 +4,8 @@ public class PlayerMovementController : MonoBehaviour
 {
     private Transform player;
 
+    public LayerMask blockageLayer;
+
     private float moveDistance = 1f; // Distance the player moves on the grid
     private int maxSteps = 9; // Maximum steps allowed at once
 
@@ -32,10 +34,10 @@ public class PlayerMovementController : MonoBehaviour
         // Check for blockage
         for (int i = 0; i < steps; i++)
         {
-            if (rayCastController.IsBlockedInFront())
+            if (rayCastController.IsInFront(blockageLayer))
             {
                 //inputController.ShowErrorMessage("Path in front has a blockage!");
-                return; // Stop movement if there's a blockage
+                return;
             }
 
             player.position += player.up * moveDistance; // Move the player

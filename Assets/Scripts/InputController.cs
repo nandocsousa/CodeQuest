@@ -9,14 +9,25 @@ public class InputController : MonoBehaviour
     [SerializeField] private Button executeButton;
     [SerializeField] public TMP_Text errorText;
 
-    private PlayerMovementController playerMovementController;
-    [Header("Scripts References")]
+    [Header("References")]
     public LaserController laserController;
+    private PlayerMovementController playerMovementController;
+    private BoxController[] boxControllers;
 
-    private void Start()
+    private void Awake()
     {
         playerMovementController = GetComponent<PlayerMovementController>();
 
+        GameObject[] boxes = GameObject.FindGameObjectsWithTag("Box");
+        boxControllers = new BoxController[boxes.Length];
+        for (int i = 0; i < boxes.Length; i++)
+        {
+            boxControllers[i] = boxes[i].GetComponent<BoxController>();
+        }
+    }
+
+    private void Start()
+    {
         executeButton.onClick.AddListener(ProcessInput);
 
         errorText.text = ""; // Clear error text
@@ -51,6 +62,13 @@ public class InputController : MonoBehaviour
         {
             laserController?.ProcessActivateCommand(input, false);
         }
+        else if (input.StartsWith("push()"))
+        {
+            foreach (BoxController box in boxControllers)
+            {
+                box.ProcessPushCommand();
+            }
+        }
 
         inputField.text = ""; // Clear input field
 
@@ -60,12 +78,12 @@ public class InputController : MonoBehaviour
     public void ShowErrorMessage(string message)
     {
         errorText.text = message;
-        Debug.LogError(message); // Log the error to the console as well
+        Debug.LogError(message);
     }
 
     private void RefocusInputField()
     {
         inputField.Select();
-        inputField.ActivateInputField(); // Ensures input mode is active
+        inputField.ActivateInputField();
     }
 }
