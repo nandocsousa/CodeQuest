@@ -14,9 +14,12 @@ public class InputController : MonoBehaviour
     private PlayerMovementController playerMovementController;
     private BoxController[] boxControllers;
 
+    private GameObject player;
+
     private void Awake()
     {
         playerMovementController = GetComponent<PlayerMovementController>();
+        player = GameObject.FindGameObjectWithTag("Player");
 
         GameObject[] boxes = GameObject.FindGameObjectsWithTag("Box");
         boxControllers = new BoxController[boxes.Length];
@@ -64,9 +67,22 @@ public class InputController : MonoBehaviour
         }
         else if (input.StartsWith("push()"))
         {
+            BoxController closestBox = null;
+            float closestDistance = float.MaxValue;
+
             foreach (BoxController box in boxControllers)
             {
-                box.ProcessPushCommand();
+                float distance = Vector2.Distance(player.transform.position, box.transform.position);
+                if (distance < closestDistance)
+                {
+                    closestDistance = distance;
+                    closestBox = box;
+                }
+            }
+
+            if (closestBox != null)
+            {
+                closestBox.ProcessPushCommand();
             }
         }
 

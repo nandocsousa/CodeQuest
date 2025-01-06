@@ -5,7 +5,7 @@ public class BoxController : MonoBehaviour
     private InputController inputController;
 
     private GameObject player;
-    private RayCastController rayCastController;
+    public RayCastController rayCastController;
 
     public LayerMask boxMask;
 
